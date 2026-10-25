@@ -194,6 +194,14 @@ export class BrowserEngine {
             const target = this.locator(page, step);
             if (step.op === "click") await target.click({ signal });
             else if (step.op === "fill") await target.fill(step.value, { signal });
+            else if (step.op === "upload") {
+              const paths = String(step.value || "").split("\n").map(p => p.trim()).filter(Boolean);
+              if (!paths.length) throw new Error("upload needs one absolute file path per line in value");
+              for (const p of paths) {
+                if (!/^(?:[A-Za-z]:[\\/]|\/)/.test(p)) throw new Error("upload paths must be absolute: " + p);
+              }
+              await target.setInputFiles(paths, { signal });
+            }
             else if (step.op === "press") await target.press(step.value, { signal });
             else if (step.op === "select") await target.selectOption(step.value, { signal });
             else if (step.op === "check") await target.setChecked(step.checked ?? true, { signal });

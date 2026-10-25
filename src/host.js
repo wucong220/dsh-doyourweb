@@ -50,7 +50,7 @@ const readArgs = z.object({ tab, mode: z.enum(["auto", "dom"]).optional(),
   selector: z.string().optional(), query: z.string().optional(),
   depth: z.number().int().min(1).max(30).optional(), cursor: z.string().optional(),
   limit: z.number().int().min(400).max(8000).optional() });
-const stepArgs = z.object({ op: z.enum(["click", "fill", "press", "select", "check", "hover", "scroll", "navigate", "back", "forward", "wait", "extract"]),
+const stepArgs = z.object({ op: z.enum(["click", "fill", "upload", "press", "select", "check", "hover", "scroll", "navigate", "back", "forward", "wait", "extract"]),
   ref: z.string().optional(), selector: z.string().optional(), value: z.string().optional(),
   checked: z.boolean().optional(), amount: z.number().int().min(-5000).max(5000).optional(),
   state: z.enum(["visible", "hidden", "attached", "detached"]).optional(),

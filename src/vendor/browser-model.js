@@ -69,7 +69,7 @@ export class BrowserModel {
     };
     if (method === "Browser.setDownloadBehavior") return {};
     if (method === "Target.setAutoAttach" && !sessionId) { await this.enableAutoAttach(); return {}; }
-    if (method === "Target.createTarget" || method === "Target.closeTarget") {
+    if (method === "Target.closeTarget") {
       throw new Error("Only explicitly referenced existing tabs can be controlled");
     }
     const top = [...this.sessions.values()].find(tab => tab.sessionId === sessionId);

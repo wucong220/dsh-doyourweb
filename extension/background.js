@@ -117,6 +117,12 @@ async function command(message, connection) {
       await chrome.windows.update(tab.windowId, { focused: true });
       return {};
     }
+    case "chrome.tabs.create": {
+      const opts = args[0] || {};
+      const created = await chrome.tabs.create({ url: String(opts.url || "about:blank"), active: opts.active !== false });
+      scheduleInventory();
+      return { id: created.id, tabId: created.id, url: created.url || opts.url || "about:blank" };
+    }
     default: throw new Error("Unsupported browser bridge command");
   }
 }

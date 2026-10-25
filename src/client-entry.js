@@ -36,7 +36,10 @@ export function apply(ctx) {
     tabIcon: tab => props => createElement(TabIcon, { ...props, favicon: tab.favicon }),
     appIcon: AppIcon, applicationIcon: app => props => createElement(AppIcon, { ...props, icon: app.icon }),
   });
-  const client = crypto.randomUUID(); let revision = 0;
+  const client = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+  let revision = 0;
   const delivered = new Map(), acknowledgements = new Map(), busy = new Set();
   ctx.inject?.(["slots", "sessions"], scope => {
     const publish = async (sessionId, active) => {

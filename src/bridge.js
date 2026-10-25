@@ -36,6 +36,7 @@ export class BrowserBridge extends EventEmitter {
     this.pairings = new Pairings();
     this.setupKey = randomBytes(16).toString("hex");
     this.sequence = 0;
+    this.pendingGrants = []; /* PATCH: pendingGrants */
   }
 
   /**
@@ -294,6 +295,17 @@ export class BrowserBridge extends EventEmitter {
     });
   }
 
+  /** Open a URL in a new tab and remember it so the caller can grant it. */
+  async openTab(url, active, sessionId) {
+    /* PATCH: openTab */
+    const profile = [...this.profiles.values()].find(p => p.ws && p.ws.readyState === WebSocket.OPEN);
+    if (!profile) throw new Error("No browser extension is connected. Open /browser to pair the extension, then retry.");
+    const created = await this.request(profile, "chrome.tabs.create", [{ url, active: active !== false }]);
+    const tabId = created && (created.id ?? created.tabId);
+    const ref = "dsh-browser://" + profile.id + "/" + tabId;
+    this.pendingGrants.push({ sessionId, ref });
+    return { tab: ref, tabId, url, profile: profile.id };
+  }
   request(profile, method, params) {
     if (profile.ws.readyState !== WebSocket.OPEN) return Promise.reject(new Error("Browser extension disconnected"));
     const id = ++this.sequence;

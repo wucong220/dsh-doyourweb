@@ -185,9 +185,9 @@ export async function apply(ctx, config = {}) {
   ctx.tools.register(tool("browser_open",
     "Open a URL in a NEW browser tab in the connected Chrome/Edge. The tab is auto-authorized for this conversation, so it can be read immediately without another @ reference. Use this instead of browser_act navigate when the existing tab must stay put. Returns the new tab reference and url.",
     z.object({ url: z.string().min(1).describe("Absolute http(s) URL to open, e.g. https://example.com"),
-      active: z.boolean().optional().describe("Focus the new tab (default true)") }),
+      active: z.boolean().optional().describe("Bring the new tab to the foreground. Default false so the user's current work is not interrupted") }),
     async (args, exec) => {
-      const created = await bridge.openTab(args.url, args.active !== false, exec.agent.session.id);
+      const created = await bridge.openTab(args.url, args.active === true, exec.agent.session.id);
       const pending = bridge.pendingGrants.splice(0);
       for (const item of pending) await grants.allow(item.sessionId, [item.ref]);
       return { ok: true, ...created };
